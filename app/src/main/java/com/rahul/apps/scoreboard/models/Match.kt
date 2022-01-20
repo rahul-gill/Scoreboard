@@ -1,7 +1,5 @@
 package com.rahul.apps.scoreboard.models
 
-import android.util.Log
-
 enum class BowlResult{
     DOT_BOWL,
     SINGLE_RUN, DOUBLE_RUN, TRIPLE_RUN, FOUR, SIX,
@@ -20,8 +18,7 @@ class Match {
             field.isBatting = true
         }
     var nonStrikeBatsman = Player()
-
-    var nextBatsmanInQueue: Player? = Player()
+    var nextBatsmanInQueueIndex: Int? = null
     var bowler = Player()
 
     fun nextBowl(bowlResult: BowlResult, bowlResultExtra: BowlResult = BowlResult.NOTHING){
@@ -30,10 +27,11 @@ class Match {
     }
     fun switchTeams(){
         battingTeam = bowlingTeam.also { bowlingTeam = battingTeam }
-        batsman = battingTeam.players.first()
+        batsman = battingTeam.players[0]
+        nonStrikeBatsman = battingTeam.players[1]
         bowler = bowlingTeam.players.last()
-        nextBatsmanInQueue =
-            if(1 < battingTeam.players.size) battingTeam.players[1]
+        nextBatsmanInQueueIndex =
+            if(2 < battingTeam.players.size) 2
             else null
     }
     private fun processBowlResult(bowlResult: BowlResult){
@@ -95,10 +93,12 @@ class Match {
     private fun wicket(){
         bowler.bowlingRecord.wickets++
         battingTeam.wickets++
-        if(nextBatsmanInQueue != null){
-            batsman = nextBatsmanInQueue!!
+        if(nextBatsmanInQueueIndex != null){
+            batsman = battingTeam.players[nextBatsmanInQueueIndex!!]
+            nextBatsmanInQueueIndex =
+            if(nextBatsmanInQueueIndex == battingTeam.players.size) null
+            else nextBatsmanInQueueIndex!! + 1
         }
         else switchTeams()
-        // have to update nextBatsmanInQueue after it
     }
 }

@@ -6,6 +6,12 @@
 
     </data>
 
+    <androidx.cardview.widget.CardView
+        android:elevation="8dp"
+        android:layout_marginHorizontal="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,8 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="fill"
-            android:background="#eeeeee">
+            android:gravity="fill">
             <TextView
                 android:id="@+id/player_name"
                 android:layout_width="wrap_content"
@@ -63,4 +68,5 @@
             android:paddingLeft="40dp"
             tools:ignore="RtlHardcoded,RtlSymmetry" />
     </LinearLayout>
+</androidx.cardview.widget.CardView>
 </layout>

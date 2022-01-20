@@ -3,6 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../layout/compose-model-1640270341913.xml" value="0.31049069373942473" />
+        <entry key="../../../layout/compose-model-1640271867245.xml" value="0.31049069373942473" />
+        <entry key="../../../layout/compose-model-1640319583635.xml" value="0.33" />
+        <entry key="../../../layout/compose-model-1640322152577.xml" value="0.3096446700507614" />
+        <entry key="../../../layout/compose-model-1640328369348.xml" value="0.31049069373942473" />
+        <entry key="../../../layout/compose-model-1640329728721.xml" value="0.30996621621621623" />
+        <entry key="../../../layout/compose-model-1642677753028.xml" value="0.5" />
+        <entry key="../../../layout/compose-model-1642678753349.xml" value="0.5" />
+        <entry key="../../../layout/compose-model-1642678971173.xml" value="0.5" />
+        <entry key="../../../layout/compose-model-1642688473494.xml" value="0.31049069373942473" />
+        <entry key="app/src/main/res/drawable/ic_baseline_person.xml" value="0.3703125" />
+        <entry key="app/src/main/res/drawable/ic_delete.xml" value="0.3703125" />
         <entry key="app/src/main/res/drawable/ic_edit.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/drawable/ic_play_match.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/drawable/ripple_effec.xml" value="0.23020833333333332" />
@@ -12,9 +24,10 @@
         <entry key="app/src/main/res/layout/batting_scorecard_item.xml" value="0.5" />
         <entry key="app/src/main/res/layout/bowling_scorecard_item.xml" value="0.10410334346504559" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.10511651469098278" />
-        <entry key="app/src/main/res/layout/fragment_scorecard.xml" value="0.22" />
-        <entry key="app/src/main/res/layout/fragment_team.xml" value="0.10511651469098278" />
-        <entry key="app/src/main/res/layout/list_editable_text_item.xml" value="0.21" />
+        <entry key="app/src/main/res/layout/fragment_scorecard.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_team.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/list_editable_text_item.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/team_edit_layout.xml" value="0.3283514492753623" />
       </map>
     </option>
   </component>

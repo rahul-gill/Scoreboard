@@ -6,8 +6,11 @@
     <string name="team_a_name_placeholder">Team A</string>
     <string name="team_b_name_placeholder">Team B</string>
     <string name="player_name_placeholder">player</string>
-    <string name="done_editing_teams">DONE</string>
+    <string name="done_editing_teams">Done</string>
     <string name="toss">Toss</string>
     <string name="won_the_toss">\ won the toss. Choose the team that will bat first</string>
     <string name="will_be_batting_first">will be batting first</string>
+    <string name="add_player">Add Player</string>
+    <string name="team_name">Team Name</string>
+    <string name="team_players">Team Players</string>
 </resources>

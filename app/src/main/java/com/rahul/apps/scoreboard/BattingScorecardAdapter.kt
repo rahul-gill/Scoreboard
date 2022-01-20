@@ -3,6 +3,7 @@ package com.rahul.apps.scoreboard
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.rahul.apps.scoreboard.databinding.BattingScorecardItemBinding
@@ -30,6 +31,7 @@ class BattingScorecardAdapter: RecyclerView.Adapter<BattingScorecardAdapter.View
                 binding.playerFours.text = "4"
                 binding.playerSixes.text = "6"
                 binding.playerStrikeRate.text ="SR"
+                binding.playerStatus.visibility = View.GONE
             }
             else {
                 val pl = (player as BattingScorecardItem.PlayerData)

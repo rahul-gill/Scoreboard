@@ -1,5 +1,8 @@
 package com.rahul.apps.scoreboard.models
 
+import androidx.room.Entity
+
+@Entity
 data class Overs(
     var overs: Int = 0,
     var bowls: Int = 0,

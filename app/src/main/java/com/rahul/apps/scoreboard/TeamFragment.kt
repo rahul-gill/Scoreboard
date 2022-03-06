@@ -1,95 +1,354 @@
 package com.rahul.apps.scoreboard
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.SystemClock
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
-import androidx.core.widget.doOnTextChanged
-import androidx.databinding.DataBindingUtil
+import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.tabs.TabLayout
-import com.rahul.apps.scoreboard.databinding.FragmentTeamBinding
+import com.rahul.apps.scoreboard.models.Match
 import com.rahul.apps.scoreboard.models.Player
 import com.rahul.apps.scoreboard.models.Team
 import kotlin.random.Random
 
 
 class TeamFragment : Fragment() {
-    private lateinit var binding: FragmentTeamBinding
     private val viewModel: ScorecardViewModel by activityViewModels()
-    private val teams = listOf(Team(players = mutableListOf(Player())), Team(players = mutableListOf(Player(), Player())))
-    private val adapter = TextRecyclerViewAdapter()
-    private var teamIndex: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_team, container, false)
-        binding.doneButton.setOnClickListener { onDone() }
-        binding.teamPlayers.adapter = adapter
-
-        binding.teamName.doOnTextChanged { text, _, _, _ ->
-            teams[teamIndex].name = text.toString()
+        return ComposeView(requireContext()).apply {
+            setContent {
+                MaterialTheme{
+                    TeamScreen(
+                        onDone = {
+                            buildMatchObject(it)
+                            findNavController().navigate(TeamFragmentDirections.actionTeamFragmentToScorecardFragment())
+                        },
+                        goBack = { findNavController().navigateUp() }
+                    )
+                }
+            }
         }
 
-        tabSetup(0)
-        binding.teamTabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.position?.let { teamIndex -> tabSetup(teamIndex) }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-
-        })
-
-        return binding.root
     }
 
-    private fun onDone(){
-        val teamAName = teams[0].name
-        val teamBName = teams[1].name
-        val winner =
-            if(Random(SystemClock.currentThreadTimeMillis()).nextBoolean()) teamAName
-            else teamBName
-
-        val tossDialog = AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.toss))
-            .setMessage(winner + getString(R.string.won_the_toss))
-            .setPositiveButton(teamAName){ _, _ ->
-                viewModel.match.battingTeam = teams[0]
-                viewModel.match.bowlingTeam = teams[1]
-                findNavController().navigate(TeamFragmentDirections.actionTeamFragmentToScorecardFragment())
-            }
-            .setNegativeButton(teamBName){ _, _ ->
-                viewModel.match.battingTeam = teams[1]
-                viewModel.match.bowlingTeam = teams[0]
-                findNavController().navigate(TeamFragmentDirections.actionTeamFragmentToScorecardFragment())
-            }
-            .create()
-        tossDialog.show()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun tabSetup(teamIndex: Int){
-        binding.teamTabs.tabMode
-        this.teamIndex = teamIndex
-        binding.teamName.setText(teams[teamIndex].name)
-        adapter.players = teams[teamIndex].players
-        adapter.notifyDataSetChanged()
-        binding.newPlayerButton.setOnClickListener {
-            teams[teamIndex].players.add(Player())
-            Log.d("DEBUG", "onNewPlayer ${teams[teamIndex].players.map { it.name  }}")
-            Log.d("DEBUG", "onNewPlayer adpater ${adapter.players.map { it.name  }}")
-            adapter.notifyItemInserted(teams[teamIndex].players.size - 1)
+    private fun buildMatchObject(match: Match) {
+        viewModel.match = match
+        viewModel.match.apply {
+            batsman = battingTeam.players.first()
+            bowler = bowlingTeam.players.last()
+            nextBatsmanInQueueIndex =
+                if (2 < battingTeam.players.size) 2
+                else null
+            nonStrikeBatsman = battingTeam.players[1]
         }
     }
+}
 
+
+@Preview(showBackground = true)
+@Composable
+fun TeamScreen(
+    onDone: (match: Match) -> Unit = {},
+    goBack: () -> Unit = {}
+) {
+    var tabIndex by remember { mutableStateOf(0) }
+
+    var teamAName by remember { mutableStateOf("") }
+    var teamBName by remember { mutableStateOf("") }
+
+    var teamAPlayerNames by remember { mutableStateOf(listOf("")) }
+    var teamBPlayerNames by remember { mutableStateOf(listOf("")) }
+
+    val tabTitles = listOf(
+        stringResource(id = R.string.team_a_name_placeholder),
+        stringResource(id = R.string.team_b_name_placeholder),
+    )
+    var tossDialogShowing by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+    TossDialog(
+        teamAName,
+        teamBName,
+        show = tossDialogShowing,
+        onDismiss = { tossDialogShowing = false },
+        onTossResult = { teamAIsBatting ->
+            val match = Match().apply{
+                battingTeam = Team(
+                    name = if(teamAIsBatting) teamAName else teamBName,
+                    players = (if(teamAIsBatting) teamAPlayerNames else teamBPlayerNames).map {
+                        Player(name = it)
+                    }.toMutableList()
+                )
+                bowlingTeam = Team(
+                    name = if(!teamAIsBatting) teamAName else teamBName,
+                    players = (if(!teamAIsBatting) teamAPlayerNames else teamBPlayerNames).map {
+                        Player(name = it)
+                    }.toMutableList()
+                )
+            }
+            onDone(match)
+        }
+    )
+
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = stringResource(id = R.string.app_name))
+                },
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "",
+                        modifier = Modifier.clickable { goBack() }
+                    )
+                },
+                elevation = 0.dp
+            )
+        },
+
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                text = { Text(text = stringResource(id = R.string.done_editing_teams)) },
+                icon = { Icon(imageVector = Icons.Default.DoneAll, contentDescription = "")  },
+                onClick = {
+                    when{
+                        teamAName.isBlank() -> {
+                            tabIndex = 0
+                            //TODO string resource && text field shake effect
+                            Toast.makeText(context, "Team name can't be empty", Toast.LENGTH_SHORT).show()
+                        }
+                        teamBName.isBlank() -> {
+                            tabIndex = 1
+                            Toast.makeText(context, "Team name can't be empty", Toast.LENGTH_SHORT).show()
+                        }
+                        teamAPlayerNames.any { it.isBlank() } -> {
+                            tabIndex = 0
+                            Toast.makeText(context, "Player name can't be empty", Toast.LENGTH_SHORT).show()
+                        }
+                        teamBPlayerNames.any { it.isBlank() } -> {
+                            tabIndex = 1
+                            Toast.makeText(context, "Player name can't be empty", Toast.LENGTH_SHORT).show()
+                        }
+                        teamAPlayerNames.size < 2 -> {
+                            tabIndex = 0
+                            Toast.makeText(context, "Teams must have at least two players", Toast.LENGTH_SHORT).show()
+                        }
+                        teamBPlayerNames.size < 2 -> {
+                            tabIndex = 1
+                            Toast.makeText(context, "Teams must have at least two players", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            tossDialogShowing = true
+                        }
+                    }
+                },
+            )
+        }
+    ) {
+        Column {
+            TabRow(selectedTabIndex = tabIndex) {
+                tabTitles.forEachIndexed { index, title ->
+                    Tab(
+                        selected = tabIndex == index,
+                        onClick = { tabIndex = index },
+                        text = {
+                            Text(text = title)
+                        }
+                    )
+                }
+            }
+
+            TextField(
+                value = if(tabIndex == 0) teamAName else teamBName,
+                onValueChange = {
+                    if(tabIndex == 0) teamAName = it
+                    else teamBName = it
+                },
+                label = { Text(text = stringResource(id = R.string.team_name)) },
+                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                leadingIcon = { Icon(imageVector = Icons.Default.Groups, contentDescription = "") }
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(id = R.string.team_players),
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+                Card(
+                    modifier = Modifier.clickable {
+                        if (tabIndex == 0) teamAPlayerNames = teamAPlayerNames
+                            .toMutableList()
+                            .apply { add("") }
+                        else teamBPlayerNames = teamBPlayerNames
+                            .toMutableList()
+                            .apply { add("") }
+                    },
+                    elevation = 0.dp,
+                    shape = CircleShape
+                ){
+
+                    Icon(
+                        imageVector = Icons.Default.AddCircleOutline,
+                        contentDescription = "",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+
+            }
+
+            LazyColumn{
+                itemsIndexed(items =
+                if(tabIndex == 0) teamAPlayerNames
+                else teamBPlayerNames
+                ){ playerIndex, player ->
+                    PlayerNameTextField(
+                        player,
+                        onPlayerNameChange = { newName ->
+                            if (tabIndex == 0) teamAPlayerNames = teamAPlayerNames.toMutableList().apply {
+                                set(playerIndex, newName)
+                            }
+                            else teamBPlayerNames = teamBPlayerNames.toMutableList().apply {
+                                set(playerIndex, newName)
+                            }
+                        },
+                        onPlayerRemove = {
+                            if (tabIndex == 0) teamAPlayerNames = teamAPlayerNames.toMutableList().apply {
+                                removeAt(playerIndex)
+                            }
+                            else teamBPlayerNames = teamBPlayerNames.toMutableList().apply {
+                                removeAt(playerIndex)
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlayerNameTextField(
+    player: String,
+    onPlayerNameChange:  (newName: String) -> Unit,
+    onPlayerRemove: () -> Unit
+) {
+
+    TextField(
+        value = player,
+        onValueChange = { onPlayerNameChange(it) },
+        label = { Text(text = stringResource(id = R.string.player_name)) },
+        leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = "") },
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Default.RemoveCircleOutline,
+                contentDescription = "",
+                modifier = Modifier.clickable { onPlayerRemove() }
+            )
+        },
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 4.dp, end = 4.dp, top = 8.dp)
+    )
+}
+
+@Composable
+private fun TossDialog(
+    teamAName: String,
+    teamBName: String,
+    show: Boolean,
+    onDismiss: () -> Unit,
+    onTossResult: (teamAIsBatting: Boolean) -> Unit
+){
+    var tossWinTeam: String
+    var tossLoseTeam: String
+    Random(System.currentTimeMillis()).nextBoolean().let{ teamAWonTheToss ->
+        tossWinTeam = if(teamAWonTheToss) teamAName else teamBName
+        tossLoseTeam = if(teamAWonTheToss) teamBName else teamAName
+    }
+
+
+    if (show) AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = stringResource(id = R.string.toss)) },
+        text = { Text(
+            //TODO: string resource
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold)){
+                    append(tossWinTeam)
+                }
+                append(" won the toss. Choose the team that will bat first")
+            }
+        ) },
+        buttons = {
+            Row(
+                modifier = Modifier
+                    .padding(all = 8.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                OutlinedButton(
+                    onClick = {
+                        onTossResult(tossLoseTeam == teamAName)
+                        onDismiss()
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .weight(1f)
+                ) {
+                    Text(tossLoseTeam)
+                }
+
+                OutlinedButton(
+                    onClick = {
+                        onTossResult(tossWinTeam == teamAName)
+                        onDismiss()
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .weight(1f)
+                ) {
+                    Text(tossWinTeam)
+                }
+            }
+        }
+    )
 }

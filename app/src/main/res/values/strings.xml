@@ -13,4 +13,5 @@
     <string name="add_player">Add Player</string>
     <string name="team_name">Team Name</string>
     <string name="team_players">Team Players</string>
+    <string name="player_name">Player Name</string>
 </resources>

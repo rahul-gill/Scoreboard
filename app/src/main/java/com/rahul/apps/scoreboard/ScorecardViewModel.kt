@@ -4,5 +4,5 @@ import androidx.lifecycle.ViewModel
 import com.rahul.apps.scoreboard.models.Match
 
 class ScorecardViewModel: ViewModel(){
-    val match = Match()
+    var match = Match()
 }

@@ -1,5 +1,8 @@
 package com.rahul.apps.scoreboard.models
 
+import androidx.room.Entity
+
+@Entity
 data class Score(
     var runs: Int = 0,
     var sixes: Int = 0,

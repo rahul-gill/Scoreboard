@@ -3,6 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/compose-model-1646398763886.xml" value="0.33" />
+        <entry key="../../../../layout/compose-model-1646400820458.xml" value="0.30996621621621623" />
+        <entry key="../../../../layout/compose-model-1646404765271.xml" value="0.30996621621621623" />
+        <entry key="../../../../layout/compose-model-1646408877215.xml" value="0.30996621621621623" />
+        <entry key="../../../../layout/compose-model-1646547383428.xml" value="0.1" />
+        <entry key="../../../../layout/compose-model-1646548695657.xml" value="0.30996621621621623" />
         <entry key="../../../layout/compose-model-1640270341913.xml" value="0.31049069373942473" />
         <entry key="../../../layout/compose-model-1640271867245.xml" value="0.31049069373942473" />
         <entry key="../../../layout/compose-model-1640319583635.xml" value="0.33" />
@@ -13,9 +19,12 @@
         <entry key="../../../layout/compose-model-1642678753349.xml" value="0.5" />
         <entry key="../../../layout/compose-model-1642678971173.xml" value="0.5" />
         <entry key="../../../layout/compose-model-1642688473494.xml" value="0.31049069373942473" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.28" />
+        <entry key="app/src/main/res/drawable/app_icon.xml" value="0.28" />
         <entry key="app/src/main/res/drawable/ic_baseline_person.xml" value="0.3703125" />
         <entry key="app/src/main/res/drawable/ic_delete.xml" value="0.3703125" />
         <entry key="app/src/main/res/drawable/ic_edit.xml" value="0.23020833333333332" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.28" />
         <entry key="app/src/main/res/drawable/ic_play_match.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/drawable/ripple_effec.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/drawable/ripple_effect.xml" value="0.23020833333333332" />
@@ -24,10 +33,12 @@
         <entry key="app/src/main/res/layout/batting_scorecard_item.xml" value="0.5" />
         <entry key="app/src/main/res/layout/bowling_scorecard_item.xml" value="0.10410334346504559" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.10511651469098278" />
-        <entry key="app/src/main/res/layout/fragment_scorecard.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_scorecard.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_team.xml" value="0.33" />
         <entry key="app/src/main/res/layout/list_editable_text_item.xml" value="0.5" />
         <entry key="app/src/main/res/layout/team_edit_layout.xml" value="0.3283514492753623" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.16" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.28" />
       </map>
     </option>
   </component>
